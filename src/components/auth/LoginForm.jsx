@@ -4,11 +4,12 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
+import { Loader2 } from "lucide-react";
 import AuthField, { inputClass } from "./AuthField";
 import PasswordInput from "./PasswordInput";
 import GoogleButton from "./GoogleButton";
 import { Button } from "@/components/ui/button";
-import { tempSignIn } from "@/lib/temp-auth";
+import { signIn } from "@/lib/auth-client";
 
 export default function LoginForm() {
   const router = useRouter();
@@ -25,8 +26,9 @@ export default function LoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState({});
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const next = {};
 
@@ -40,10 +42,23 @@ export default function LoginForm() {
       return;
     }
 
-    // Temporary: Better Auth sign in replaces this later.
-    const user = tempSignIn(email);
-    toast.success(`Welcome back, ${user.name}!`);
+    setLoading(true);
+    const { data, error } = await signIn.email({
+      email: email.trim(),
+      password,
+    });
+    setLoading(false);
+
+    if (error) {
+      const message = "Wrong email or password. Please try again.";
+      setErrors({ password: message });
+      toast.error(message);
+      return;
+    }
+
+    toast.success(`Welcome back, ${data?.user?.name || "reader"}!`);
     router.push(redirectTo);
+    router.refresh();
   };
 
   return (
@@ -89,9 +104,17 @@ export default function LoginForm() {
       <Button
         type="submit"
         size="lg"
-        className="btn-gloss h-11 w-full rounded-full text-base"
+        disabled={loading}
+        className="btn-gloss h-11 w-full rounded-full text-base disabled:opacity-70"
       >
-        Login
+        {loading ? (
+          <>
+            <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+            Logging in...
+          </>
+        ) : (
+          "Login"
+        )}
       </Button>
 
       <div className="flex items-center gap-3 text-xs text-muted-foreground">

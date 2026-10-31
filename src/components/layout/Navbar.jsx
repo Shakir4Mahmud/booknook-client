@@ -9,7 +9,8 @@ import { LogOut, User as UserIcon } from "lucide-react";
 import Logo from "./Logo";
 import ThemeToggle from "./ThemeToggle";
 import MobileMenu from "./MobileMenu";
-import { tempLogout, useTempUser } from "@/lib/temp-auth";
+import { useAuth } from "@/lib/temp-auth";
+import { signOut } from "@/lib/auth-client";
 import { buttonVariants } from "@/components/ui/button";
 import {
   Avatar,
@@ -39,7 +40,7 @@ const privateLinks = [
 export default function Navbar() {
   const pathname = usePathname();
   const router = useRouter();
-  const user = useTempUser();
+  const { user, pending } = useAuth();
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
@@ -54,11 +55,12 @@ export default function Navbar() {
   const isActive = (href) =>
     href === "/" ? pathname === "/" : pathname.startsWith(href);
 
-  const handleLogout = () => {
-    tempLogout();
+  const handleLogout = async () => {
     setOpen(false);
+    await signOut();
     toast.success("You have been logged out.");
     router.push("/");
+    router.refresh();
   };
 
   return (
@@ -114,7 +116,12 @@ export default function Navbar() {
         <div className="flex items-center gap-3">
           <ThemeToggle />
 
-          {user ? (
+          {pending ? (
+            <span
+              aria-hidden="true"
+              className="hidden h-9 w-24 animate-pulse rounded-full bg-foreground/10 md:block"
+            />
+          ) : user ? (
             <DropdownMenu>
               <DropdownMenuTrigger className="rounded-full outline-none focus-visible:ring-2 focus-visible:ring-ring">
                 <Avatar className="h-9 w-9 ring-2 ring-primary/60">

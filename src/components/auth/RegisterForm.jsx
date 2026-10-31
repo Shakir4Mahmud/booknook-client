@@ -4,12 +4,13 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { Loader2 } from "lucide-react";
 import AuthField, { inputClass } from "./AuthField";
 import PasswordInput from "./PasswordInput";
 import PasswordChecklist, { isPasswordValid } from "./PasswordChecklist";
 import GoogleButton from "./GoogleButton";
 import { Button } from "@/components/ui/button";
-import { tempRegister } from "@/lib/temp-auth";
+import { signUp } from "@/lib/auth-client";
 
 export default function RegisterForm() {
   const router = useRouter();
@@ -17,8 +18,9 @@ export default function RegisterForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState({});
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const next = {};
 
@@ -42,11 +44,28 @@ export default function RegisterForm() {
       return;
     }
 
-    // Temporary: Better Auth sign up replaces this later.
-    // The user is logged in right after registering, so they go straight to Home.
-    tempRegister({ name: name.trim(), email: email.trim() });
+    setLoading(true);
+    const { error } = await signUp.email({
+      name: name.trim(),
+      email: email.trim(),
+      password,
+    });
+    setLoading(false);
+
+    if (error) {
+      const exists = /exist|already/i.test(error.message || "");
+      const message = exists
+        ? "An account with this email already exists. Try logging in."
+        : error.message || "Could not create your account. Please try again.";
+      if (exists) setErrors({ email: message });
+      toast.error(message);
+      return;
+    }
+
+    // Better Auth signs the user in right after sign up, so go straight to Home.
     toast.success(`Welcome to BookNook, ${name.trim()}!`);
     router.push("/");
+    router.refresh();
   };
 
   return (
@@ -88,9 +107,17 @@ export default function RegisterForm() {
       <Button
         type="submit"
         size="lg"
-        className="btn-gloss h-11 w-full rounded-full text-base"
+        disabled={loading}
+        className="btn-gloss h-11 w-full rounded-full text-base disabled:opacity-70"
       >
-        Register
+        {loading ? (
+          <>
+            <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+            Creating account...
+          </>
+        ) : (
+          "Register"
+        )}
       </Button>
 
       <div className="flex items-center gap-3 text-xs text-muted-foreground">
