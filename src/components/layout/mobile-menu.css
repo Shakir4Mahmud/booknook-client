@@ -1,0 +1,106 @@
+/* Mobile drawer: floating orbs, spinning avatar ring, light sweep. */
+
+/* Do NOT set position here. The Sheet panel is already position: fixed. */
+.mm-panel {
+  overflow: hidden;
+  -webkit-backdrop-filter: blur(40px) saturate(190%);
+  backdrop-filter: blur(40px) saturate(190%);
+}
+
+/* Thin gradient light line on the left edge */
+.mm-panel::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 6%;
+  bottom: 6%;
+  width: 1px;
+  background: linear-gradient(
+    180deg,
+    transparent,
+    rgba(246, 183, 86, 0.9),
+    rgba(109, 93, 252, 0.7),
+    rgba(31, 181, 176, 0.8),
+    transparent
+  );
+  pointer-events: none;
+  z-index: 5;
+}
+
+.mm-orb {
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(60px);
+  pointer-events: none;
+  animation: mm-float 12s ease-in-out infinite;
+}
+
+@keyframes mm-float {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+  50% { transform: translate3d(24px, -30px, 0) scale(1.15); }
+}
+
+/* Avatar with a slowly turning rainbow ring */
+.mm-avatar-ring {
+  display: inline-block;
+  padding: 2px;
+  border-radius: 9999px;
+  background: conic-gradient(#f6b756, #6d5dfc, #1fb5b0, #e0607e, #f6b756);
+  animation: mm-spin 6s linear infinite;
+}
+
+.mm-avatar-ring > * {
+  animation: mm-spin 6s linear infinite reverse;
+}
+
+@keyframes mm-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Light sweep across the user card */
+.mm-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.mm-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    110deg,
+    transparent 30%,
+    rgba(255, 255, 255, 0.16) 50%,
+    transparent 70%
+  );
+  transform: translateX(-120%);
+  animation: mm-sweep 4.5s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes mm-sweep {
+  0%, 55% { transform: translateX(-120%); }
+  100% { transform: translateX(120%); }
+}
+
+/* Active link: glowing gold pill */
+.mm-active {
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--primary) 32%, transparent),
+    color-mix(in srgb, var(--primary) 6%, transparent)
+  );
+  border: 1px solid color-mix(in srgb, var(--primary) 45%, transparent);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.3),
+    0 10px 24px -14px var(--primary);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mm-orb,
+  .mm-avatar-ring,
+  .mm-avatar-ring > *,
+  .mm-card::after {
+    animation: none;
+  }
+}

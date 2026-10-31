@@ -7,6 +7,7 @@ import ThemeProvider from "@/components/layout/ThemeProvider";
 import BackgroundOrbs from "@/components/layout/BackgroundOrbs";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
+import { Toaster } from "@/components/ui/sonner";
 
 const fraunces = Fraunces({
   subsets: ["latin"],
@@ -46,6 +47,7 @@ export default function RootLayout({ children }) {
           <Navbar />
           <div className="flex-1">{children}</div>
           <Footer />
+          <Toaster position="top-center" richColors />
         </ThemeProvider>
       </body>
     </html>
