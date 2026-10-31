@@ -1,5 +1,11 @@
 import { Fraunces, DM_Sans } from "next/font/google";
 import "./globals.css";
+import "./glass.css";
+import "./effects.css";
+import ThemeProvider from "@/components/layout/ThemeProvider";
+import BackgroundOrbs from "@/components/layout/BackgroundOrbs";
+import Navbar from "@/components/layout/Navbar";
+import Footer from "@/components/layout/Footer";
 
 const fraunces = Fraunces({
   subsets: ["latin"],
@@ -26,10 +32,21 @@ export default function RootLayout({ children }) {
   return (
     <html
       lang="en"
-      className={`${fraunces.variable} ${dmSans.variable} dark`}
+      className={`${fraunces.variable} ${dmSans.variable}`}
       suppressHydrationWarning
     >
-      <body className="min-h-screen antialiased">{children}</body>
+      <body className="flex min-h-screen flex-col antialiased">
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="dark"
+          enableSystem={false}
+        >
+          <BackgroundOrbs />
+          <Navbar />
+          <div className="flex-1">{children}</div>
+          <Footer />
+        </ThemeProvider>
+      </body>
     </html>
   );
 }
