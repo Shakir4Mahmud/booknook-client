@@ -59,7 +59,7 @@ Fixed 3:4 cover, category-colored spine strip, title (2-line clamp), author, cat
 - **404:** big glass "404", illustration, "Back to Home".
 
 ## Build steps
-- [ ] **Step 1:** Cleanup, folder rename, fonts, theme tokens, `next.config.mjs` image domains
+- [ o] **Step 1:** Cleanup, folder rename, fonts, theme tokens, `next.config.mjs` image domains
 - [ ] **Step 2:** Glass utilities, `GlassCard`, `SectionHeading`, `BackgroundOrbs`
 - [ ] **Step 3:** Navbar (static, then responsive)
 - [ ] **Step 4:** Footer
