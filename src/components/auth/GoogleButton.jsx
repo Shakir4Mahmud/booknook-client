@@ -1,6 +1,9 @@
 "use client";
 
+import { useState } from "react";
 import { toast } from "sonner";
+import { Loader2 } from "lucide-react";
+import { signIn } from "@/lib/auth-client";
 import { cn } from "@/lib/utils";
 
 function GoogleIcon() {
@@ -14,23 +17,45 @@ function GoogleIcon() {
   );
 }
 
+// Only paths on this site are allowed, so nobody can be sent to another website.
+function getRedirectPath() {
+  const raw = new URLSearchParams(window.location.search).get("redirect");
+  return raw && raw.startsWith("/") && !raw.startsWith("//") ? raw : "/";
+}
+
 export default function GoogleButton({ className }) {
-  // UI only for now. Better Auth Google sign in is connected later.
-  const handleClick = () => {
-    toast.info("Google sign in will work once authentication is connected.");
+  const [loading, setLoading] = useState(false);
+
+  const handleClick = async () => {
+    setLoading(true);
+    const { error } = await signIn.social({
+      provider: "google",
+      callbackURL: getRedirectPath(),
+    });
+
+    // On success the browser leaves for Google, so we only get here on a problem.
+    if (error) {
+      setLoading(false);
+      toast.error("Could not start Google sign in. Please try again.");
+    }
   };
 
   return (
     <button
       type="button"
       onClick={handleClick}
+      disabled={loading}
       className={cn(
-        "glass flex h-11 w-full items-center justify-center gap-3 rounded-full text-sm font-semibold transition hover:-translate-y-0.5 hover:border-primary/50",
+        "glass flex h-11 w-full items-center justify-center gap-3 rounded-full text-sm font-semibold transition hover:-translate-y-0.5 hover:border-primary/50 disabled:opacity-70",
         className
       )}
     >
-      <GoogleIcon />
-      Continue with Google
+      {loading ? (
+        <Loader2 className="h-5 w-5 animate-spin" />
+      ) : (
+        <GoogleIcon />
+      )}
+      {loading ? "Opening Google..." : "Continue with Google"}
     </button>
   );
 }
