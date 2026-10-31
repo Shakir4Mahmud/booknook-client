@@ -2,6 +2,7 @@ import { Fraunces, DM_Sans } from "next/font/google";
 import "./globals.css";
 import "./glass.css";
 import "./effects.css";
+import "./navbar.css";
 import ThemeProvider from "@/components/layout/ThemeProvider";
 import BackgroundOrbs from "@/components/layout/BackgroundOrbs";
 import Navbar from "@/components/layout/Navbar";
