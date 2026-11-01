@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import Link from "next/link";
 import { toast } from "sonner";
 import { LayoutGrid, Pencil, Plus, Rows3, Trash2, BookPlus } from "lucide-react";
@@ -8,12 +8,15 @@ import BookThumb from "./BookThumb";
 import CopiesBadge from "./CopiesBadge";
 import DeleteBookDialog from "./DeleteBookDialog";
 import EditBookDialog from "./EditBookDialog";
+import ErrorState from "@/components/shared/ErrorState";
 import GlassCard from "@/components/shared/GlassCard";
+import Spinner from "@/components/shared/Spinner";
 import { buttonVariants } from "@/components/ui/button";
-import { mockBooks } from "@/lib/mock-books";
+import { apiFetch } from "@/lib/api";
 import { getCategoryColor } from "@/lib/categories";
 import { formatDate } from "@/lib/format";
 import { useTempUser } from "@/lib/temp-auth";
+import { useFetch } from "@/lib/use-fetch";
 import { cn } from "@/lib/utils";
 
 function CategoryPill({ category }) {
@@ -55,32 +58,49 @@ function RowActions({ book, onEdit, onDelete }) {
   );
 }
 
-// Rendered only after login, so user is always set here.
+// Rendered only after login, so the user is always set here.
 export default function MyBooksView() {
   const user = useTempUser();
+  const { data, error, loading, reload, setData } = useFetch("/books", {
+    enabled: Boolean(user),
+  });
 
-  // Temporary demo data: the first 4 mock books, owned by the logged in user.
-  // Replaced by GET /books filtered by the user's email once the server is connected.
-  const [books, setBooks] = useState(() =>
-    mockBooks.slice(0, 4).map((book) => ({
-      ...book,
-      addedBy: { name: user?.name ?? "", email: user?.email ?? "" },
-    }))
-  );
   const [view, setView] = useState("cards");
   const [editing, setEditing] = useState(null);
   const [deleting, setDeleting] = useState(null);
 
+  // Only the books this user added.
+  const myEmail = user?.email?.toLowerCase();
+  const books = useMemo(
+    () =>
+      (data || []).filter(
+        (book) => book.addedBy?.email?.toLowerCase() === myEmail
+      ),
+    [data, myEmail]
+  );
+
   const handleSave = (updated) => {
-    setBooks((list) => list.map((b) => (b._id === updated._id ? updated : b)));
+    setData((list) =>
+      list.map((book) => (book._id === updated._id ? updated : book))
+    );
   };
 
-  const handleDelete = (book) => {
-    // Temporary: DELETE /books/:id replaces this later.
-    setBooks((list) => list.filter((b) => b._id !== book._id));
-    setDeleting(null);
-    toast.success(`"${book.title}" was deleted.`);
+  const handleDelete = async (book) => {
+    try {
+      await apiFetch(`/books/${book._id}`, { method: "DELETE", auth: true });
+      setData((list) => list.filter((item) => item._id !== book._id));
+      toast.success(`"${book.title}" was deleted.`);
+    } catch (err) {
+      toast.error(err.message);
+    } finally {
+      setDeleting(null);
+    }
   };
+
+  if (loading) {
+    return <Spinner label="Loading your books... the server may take a few seconds to wake up." />;
+  }
+  if (error) return <ErrorState message={error} onRetry={reload} />;
 
   if (books.length === 0) {
     return (
