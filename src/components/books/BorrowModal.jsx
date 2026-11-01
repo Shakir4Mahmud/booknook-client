@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { CalendarDays } from "lucide-react";
+import { CalendarDays, Loader2 } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -26,6 +26,7 @@ export default function BorrowModal({
   book,
   openedAt,
   onConfirm,
+  submitting,
 }) {
   const [days, setDays] = useState(7);
   const user = useTempUser();
@@ -54,7 +55,7 @@ export default function BorrowModal({
           className="space-y-4"
           onSubmit={(e) => {
             e.preventDefault();
-            onConfirm(days);
+            if (!submitting) onConfirm(days);
           }}
         >
           <div className="space-y-1.5">
@@ -120,9 +121,17 @@ export default function BorrowModal({
           <Button
             type="submit"
             size="lg"
-            className="btn-gloss h-11 w-full rounded-full"
+            disabled={submitting}
+            className="btn-gloss h-11 w-full rounded-full disabled:opacity-70"
           >
-            Confirm Borrow
+            {submitting ? (
+              <>
+                <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                Borrowing...
+              </>
+            ) : (
+              "Confirm Borrow"
+            )}
           </Button>
         </form>
       </DialogContent>
