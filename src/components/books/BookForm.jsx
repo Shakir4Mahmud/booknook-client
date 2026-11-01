@@ -12,6 +12,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { apiFetch } from "@/lib/api";
 import { categoryList, getCategoryColor } from "@/lib/categories";
 import { hasImgbbKey, uploadToImgbb } from "@/lib/imgbb";
 import { cn } from "@/lib/utils";
@@ -73,34 +74,39 @@ export default function BookForm({ user }) {
     }
 
     setSaving(true);
-    try {
-      let imageUrl = "";
-      if (hasImgbbKey) {
+
+    // Step 1: upload the cover to imgbb.
+    let imageUrl = "";
+    if (hasImgbbKey) {
+      try {
         imageUrl = await uploadToImgbb(file);
-      } else {
-        toast.info("No imgbb key found, so the upload was skipped (test mode).");
+      } catch {
+        toast.error("Could not upload the image. Please try again.");
+        setSaving(false);
+        return;
       }
+    } else {
+      toast.info("No imgbb key found, so the cover upload was skipped.");
+    }
 
-      const newBook = {
-        title: title.trim(),
-        author: author.trim(),
-        category,
-        image: imageUrl,
-        description: description.trim(),
-        totalCopies: copies,
-        availableCopies: copies,
-        addedBy: { name: user.name, email: user.email },
-        createdAt: new Date().toISOString(),
-      };
-
-      // Temporary: POST /books replaces this once the server is connected.
-      await new Promise((resolve) => setTimeout(resolve, 800));
-      console.log("book to save:", newBook);
-
-      toast.success(`"${newBook.title}" was added to BookNook!`);
+    // Step 2: save the book. The owner is read from the login token on the server.
+    try {
+      const saved = await apiFetch("/books", {
+        method: "POST",
+        auth: true,
+        body: {
+          title: title.trim(),
+          author: author.trim(),
+          category,
+          image: imageUrl,
+          description: description.trim(),
+          totalCopies: copies,
+        },
+      });
+      toast.success(`"${saved.title}" was added to BookNook!`);
       resetForm();
-    } catch {
-      toast.error("Could not upload the image. Please try again.");
+    } catch (err) {
+      toast.error(err.message);
     } finally {
       setSaving(false);
     }
