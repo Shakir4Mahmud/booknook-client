@@ -4,13 +4,16 @@ import { useMemo, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import BookFilters from "./BookFilters";
 import BookGrid from "./BookGrid";
+import ErrorState from "@/components/shared/ErrorState";
+import Spinner from "@/components/shared/Spinner";
 import { categoryList } from "@/lib/categories";
-import { mockBooks } from "@/lib/mock-books";
+import { useFetch } from "@/lib/use-fetch";
 
 export default function AllBooksView() {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const { data, error, loading, reload } = useFetch("/books");
 
   // Category lives in the URL so links like /books?category=Science work
   // and the filter survives a page reload.
@@ -36,7 +39,7 @@ export default function AllBooksView() {
   const visibleBooks = useMemo(() => {
     const text = query.trim().toLowerCase();
 
-    const filtered = mockBooks.filter((book) => {
+    const filtered = (data || []).filter((book) => {
       const matchesCategory = category === "All" || book.category === category;
       const matchesText =
         !text ||
@@ -50,7 +53,12 @@ export default function AllBooksView() {
       if (sort === "az") return a.title.localeCompare(b.title);
       return b.createdAt.localeCompare(a.createdAt);
     });
-  }, [query, category, sort]);
+  }, [data, query, category, sort]);
+
+  if (loading) {
+    return <Spinner label="Loading books... the server may take a few seconds to wake up." />;
+  }
+  if (error) return <ErrorState message={error} onRetry={reload} />;
 
   return (
     <div className="space-y-6">
@@ -77,7 +85,15 @@ export default function AllBooksView() {
         )}
       </p>
 
-      <BookGrid books={visibleBooks} />
+      <BookGrid
+        books={visibleBooks}
+        emptyTitle={data && data.length === 0 ? "No books yet" : "No books found"}
+        emptyText={
+          data && data.length === 0
+            ? "Nobody has shared a book yet. Add the first one!"
+            : "Try a different search or pick another shelf."
+        }
+      />
     </div>
   );
 }
