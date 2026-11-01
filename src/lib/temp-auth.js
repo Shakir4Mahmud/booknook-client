@@ -17,6 +17,7 @@ export function useAuth() {
       name: sessionUser.name,
       email: sessionUser.email,
       photo: sessionUser.image || "",
+      joined: sessionUser.createdAt || null,
     };
   }, [sessionUser]);
 
