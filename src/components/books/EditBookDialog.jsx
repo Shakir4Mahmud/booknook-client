@@ -14,6 +14,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { apiFetch } from "@/lib/api";
 import { categoryList, getCategoryColor } from "@/lib/categories";
 import { hasImgbbKey, uploadToImgbb } from "@/lib/imgbb";
 import { cn } from "@/lib/utils";
@@ -59,27 +60,29 @@ export default function EditBookDialog({ book, open, onOpenChange, onSave }) {
         if (hasImgbbKey) {
           image = await uploadToImgbb(file);
         } else {
-          toast.info("No imgbb key found, so the old cover was kept (test mode).");
+          toast.info("No imgbb key found, so the old cover was kept.");
         }
       }
 
-      // Temporary: PATCH /books/:id replaces this once the server is connected.
-      await new Promise((resolve) => setTimeout(resolve, 600));
-
-      onSave({
-        ...book,
-        title: title.trim(),
-        author: author.trim(),
-        category,
-        description: description.trim(),
-        image,
-        totalCopies: copies,
-        availableCopies: copies - borrowed,
+      // The server checks that this book belongs to the logged in user.
+      const updated = await apiFetch(`/books/${book._id}`, {
+        method: "PATCH",
+        auth: true,
+        body: {
+          title: title.trim(),
+          author: author.trim(),
+          category,
+          description: description.trim(),
+          image,
+          totalCopies: copies,
+        },
       });
-      toast.success(`"${title.trim()}" was updated.`);
+
+      onSave(updated);
+      toast.success(`"${updated.title}" was updated.`);
       onOpenChange(false);
-    } catch {
-      toast.error("Could not upload the image. Please try again.");
+    } catch (err) {
+      toast.error(err.message || "Could not save the changes.");
     } finally {
       setSaving(false);
     }
