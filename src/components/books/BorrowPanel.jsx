@@ -3,10 +3,12 @@
 import { useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { BookmarkPlus, Ban } from "lucide-react";
+import { BookmarkCheck, BookmarkPlus, Ban, UserRound } from "lucide-react";
 import BorrowModal from "./BorrowModal";
 import CopiesBadge from "./CopiesBadge";
 import { Button } from "@/components/ui/button";
+import { apiFetch } from "@/lib/api";
+import { useFetch } from "@/lib/use-fetch";
 import { useTempUser } from "@/lib/temp-auth";
 import { cn } from "@/lib/utils";
 
@@ -15,13 +17,24 @@ export default function BorrowPanel({ book }) {
   const pathname = usePathname();
   const user = useTempUser();
 
+  // The user's own borrows, to know if this book is already borrowed.
+  const borrows = useFetch("/borrows", { auth: true, enabled: Boolean(user) });
+
   const [available, setAvailable] = useState(book.availableCopies);
-  const [borrowed, setBorrowed] = useState(false);
+  const [justBorrowed, setJustBorrowed] = useState(false);
   const [open, setOpen] = useState(false);
   const [openedAt, setOpenedAt] = useState(0);
+  const [submitting, setSubmitting] = useState(false);
 
   const total = book.totalCopies;
   const percent = total > 0 ? Math.round((available / total) * 100) : 0;
+
+  const isOwner =
+    Boolean(user) &&
+    book.addedBy?.email?.toLowerCase() === user.email.toLowerCase();
+  const alreadyBorrowed =
+    justBorrowed ||
+    Boolean(borrows.data?.some((item) => item.bookId === book._id));
   const soldOut = available <= 0;
 
   const barColor = soldOut
@@ -41,19 +54,59 @@ export default function BorrowPanel({ book }) {
     setOpen(true);
   };
 
-  // UI only for now. Later this calls POST /borrows and the server checks for double borrow.
-  const handleConfirm = (days) => {
-    if (!user) return;
-    if (borrowed) {
-      toast.error("You already borrowed this book. Return it first.");
+  const handleConfirm = async (days) => {
+    setSubmitting(true);
+    try {
+      await apiFetch("/borrows", {
+        method: "POST",
+        auth: true,
+        body: { bookId: book._id, days },
+      });
+      setAvailable((count) => Math.max(0, count - 1));
+      setJustBorrowed(true);
       setOpen(false);
-      return;
+      toast.success(`Borrowed for ${days} days. Enjoy "${book.title}"!`);
+    } catch (err) {
+      if (err.status === 409) setJustBorrowed(true);
+      setOpen(false);
+      toast.error(err.message);
+    } finally {
+      setSubmitting(false);
     }
-    setBorrowed(true);
-    setAvailable((count) => count - 1);
-    setOpen(false);
-    toast.success(`Borrowed for ${days} days. Enjoy "${book.title}"!`);
   };
+
+  let button;
+  if (isOwner) {
+    button = (
+      <>
+        <UserRound className="mr-2 h-5 w-5" />
+        This is your book
+      </>
+    );
+  } else if (alreadyBorrowed) {
+    button = (
+      <>
+        <BookmarkCheck className="mr-2 h-5 w-5" />
+        Already Borrowed
+      </>
+    );
+  } else if (soldOut) {
+    button = (
+      <>
+        <Ban className="mr-2 h-5 w-5" />
+        Not Available
+      </>
+    );
+  } else {
+    button = (
+      <>
+        <BookmarkPlus className="mr-2 h-5 w-5" />
+        Borrow This Book
+      </>
+    );
+  }
+
+  const disabled = isOwner || alreadyBorrowed || soldOut;
 
   return (
     <div className="glass rounded-3xl p-5 sm:p-6">
@@ -82,22 +135,23 @@ export default function BorrowPanel({ book }) {
       <Button
         type="button"
         size="lg"
-        disabled={soldOut}
+        disabled={disabled}
         onClick={handleOpen}
         className="btn-gloss mt-5 h-12 w-full rounded-full text-base disabled:opacity-60 disabled:saturate-50"
       >
-        {soldOut ? (
-          <>
-            <Ban className="mr-2 h-5 w-5" />
-            Not Available
-          </>
-        ) : (
-          <>
-            <BookmarkPlus className="mr-2 h-5 w-5" />
-            Borrow This Book
-          </>
-        )}
+        {button}
       </Button>
+
+      {isOwner && (
+        <p className="mt-3 text-center text-xs text-muted-foreground">
+          You added this book, so you can edit or delete it from My Books.
+        </p>
+      )}
+      {!isOwner && alreadyBorrowed && (
+        <p className="mt-3 text-center text-xs text-muted-foreground">
+          Return it from My Borrows to borrow it again.
+        </p>
+      )}
 
       {user && (
         <BorrowModal
@@ -106,6 +160,7 @@ export default function BorrowPanel({ book }) {
           book={book}
           openedAt={openedAt}
           onConfirm={handleConfirm}
+          submitting={submitting}
         />
       )}
     </div>
