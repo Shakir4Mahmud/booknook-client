@@ -2,15 +2,17 @@ import { SearchX } from "lucide-react";
 import BookCard from "./BookCard";
 import GlassCard from "@/components/shared/GlassCard";
 
-export default function BookGrid({ books }) {
+export default function BookGrid({
+  books,
+  emptyTitle = "No books found",
+  emptyText = "Try a different search or pick another shelf.",
+}) {
   if (!books || books.length === 0) {
     return (
       <GlassCard className="mx-auto flex max-w-md flex-col items-center py-12 text-center">
         <SearchX className="mb-4 h-10 w-10 text-primary" />
-        <h3 className="text-xl font-bold">No books found</h3>
-        <p className="mt-2 text-sm text-muted-foreground">
-          Try a different search or pick another shelf.
-        </p>
+        <h3 className="text-xl font-bold">{emptyTitle}</h3>
+        <p className="mt-2 text-sm text-muted-foreground">{emptyText}</p>
       </GlassCard>
     );
   }
