@@ -4,6 +4,7 @@ import "./glass.css";
 import "./effects.css";
 import "./navbar.css";
 import ThemeProvider from "@/components/layout/ThemeProvider";
+import MotionProvider from "@/components/layout/MotionProvider";
 import BackgroundOrbs from "@/components/layout/BackgroundOrbs";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
@@ -37,17 +38,19 @@ export default function RootLayout({ children }) {
       className={`${fraunces.variable} ${dmSans.variable}`}
       suppressHydrationWarning
     >
-      <body className="flex min-h-screen flex-col antialiased">
+      <body className="flex min-h-screen flex-col overflow-x-clip antialiased">
         <ThemeProvider
           attribute="class"
           defaultTheme="dark"
           enableSystem={false}
         >
-          <BackgroundOrbs />
-          <Navbar />
-          <div className="flex-1">{children}</div>
-          <Footer />
-          <Toaster position="top-center" richColors />
+          <MotionProvider>
+            <BackgroundOrbs />
+            <Navbar />
+            <div className="flex-1">{children}</div>
+            <Footer />
+            <Toaster position="top-center" richColors />
+          </MotionProvider>
         </ThemeProvider>
       </body>
     </html>
