@@ -1,6 +1,23 @@
+"use client";
+
+import { motion } from "framer-motion";
 import { SearchX } from "lucide-react";
 import BookCard from "./BookCard";
 import GlassCard from "@/components/shared/GlassCard";
+
+const container = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.07 } },
+};
+
+const item = {
+  hidden: { opacity: 0, y: 24 },
+  show: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.45, ease: [0.22, 1, 0.36, 1] },
+  },
+};
 
 export default function BookGrid({
   books,
@@ -18,10 +35,19 @@ export default function BookGrid({
   }
 
   return (
-    <div className="grid grid-cols-2 gap-3 sm:gap-6 lg:grid-cols-3">
+    <motion.div
+      key={books.map((book) => book._id).join(",")}
+      variants={container}
+      initial="hidden"
+      whileInView="show"
+      viewport={{ once: true, margin: "-40px" }}
+      className="grid grid-cols-2 gap-3 sm:gap-6 lg:grid-cols-3"
+    >
       {books.map((book) => (
-        <BookCard key={book._id} book={book} />
+        <motion.div key={book._id} variants={item} className="h-full">
+          <BookCard book={book} />
+        </motion.div>
       ))}
-    </div>
+    </motion.div>
   );
 }
