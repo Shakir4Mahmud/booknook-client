@@ -54,7 +54,7 @@ export default function BookFilters({
           )}
         </div>
 
-        {/* Sort: custom glass dropdown */}
+        {/* Sort */}
         <DropdownMenu>
           <DropdownMenuTrigger
             aria-label="Sort books"
@@ -92,7 +92,7 @@ export default function BookFilters({
         </DropdownMenu>
       </div>
 
-      {/* Category chips */}
+      {/* Category  */}
       <div className="mt-4 flex flex-wrap gap-2">
         {chips.map((name) => {
           const active = category === name;

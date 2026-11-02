@@ -1,5 +1,4 @@
-// Date helper. Server and browser must print the same text, so mock dates use UTC.
-// Pass useLocal = true for dates made in the browser (like a borrow date).
+
 export function formatDate(value, useLocal = false) {
   return new Date(value).toLocaleDateString("en-US", {
     day: "numeric",
@@ -17,8 +16,7 @@ function startOfDay(value) {
   return date.getTime();
 }
 
-// Tells how many days are left for a return date.
-// tone: "ok" (green), "soon" (amber), "late" (red)
+
 export function getDueInfo(returnDate, now) {
   const days = Math.round((startOfDay(returnDate) - startOfDay(now)) / DAY_MS);
 

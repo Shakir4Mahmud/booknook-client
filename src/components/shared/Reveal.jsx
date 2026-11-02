@@ -2,7 +2,6 @@
 
 import { motion } from "framer-motion";
 
-// Fades and lifts its content in when it scrolls into view. Plays once.
 export default function Reveal({ children, delay = 0, y = 28, className }) {
   return (
     <motion.div

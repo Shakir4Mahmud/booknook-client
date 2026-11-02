@@ -75,7 +75,6 @@ export default function BookForm({ user }) {
 
     setSaving(true);
 
-    // Step 1: upload the cover to imgbb.
     let imageUrl = "";
     if (hasImgbbKey) {
       try {
@@ -89,7 +88,6 @@ export default function BookForm({ user }) {
       toast.info("No imgbb key found, so the cover upload was skipped.");
     }
 
-    // Step 2: save the book. The owner is read from the login token on the server.
     try {
       const saved = await apiFetch("/books", {
         method: "POST",

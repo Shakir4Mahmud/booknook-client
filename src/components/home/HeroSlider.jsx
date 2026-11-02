@@ -37,7 +37,7 @@ const slides = [
   },
 ];
 
-// false on the server, true in the browser. Swiper must only render in the browser.
+
 const subscribe = () => () => {};
 const getClientValue = () => true;
 const getServerValue = () => false;

@@ -1,6 +1,6 @@
 import { getToken } from "@/lib/auth-client";
 
-// Local: http://localhost:5000, Live: the Render server. Set in .env / Vercel.
+
 export const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 export async function apiFetch(path, { method = "GET", body, auth = false } = {}) {

@@ -17,7 +17,6 @@ function GoogleIcon() {
   );
 }
 
-// Only paths on this site are allowed, so nobody can be sent to another website.
 function getRedirectPath() {
   const raw = new URLSearchParams(window.location.search).get("redirect");
   return raw && raw.startsWith("/") && !raw.startsWith("//") ? raw : "/";
@@ -33,7 +32,6 @@ export default function GoogleButton({ className }) {
       callbackURL: getRedirectPath(),
     });
 
-    // On success the browser leaves for Google, so we only get here on a problem.
     if (error) {
       setLoading(false);
       toast.error("Could not start Google sign in. Please try again.");

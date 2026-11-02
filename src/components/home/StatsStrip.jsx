@@ -24,7 +24,6 @@ function CountUp({ value, duration = 1400 }) {
       frame = requestAnimationFrame(tick);
     };
 
-    // Start counting only when the strip scrolls into view.
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {

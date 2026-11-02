@@ -6,7 +6,6 @@ import { BookOpen } from "lucide-react";
 import { getCategoryColor } from "@/lib/categories";
 import { cn } from "@/lib/utils";
 
-// Big cover for the details page. Falls back to a colored tile if the image fails.
 export default function BookCover({ book, className }) {
   const [failed, setFailed] = useState(false);
   const color = getCategoryColor(book.category);

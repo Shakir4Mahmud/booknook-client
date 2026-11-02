@@ -33,7 +33,6 @@ export default function BorrowModal({
 
   if (!user) return null;
 
-  // openedAt is a timestamp saved when the modal was opened.
   const borrowDate = formatDate(openedAt, true);
   const returnDate = formatDate(openedAt + days * DAY_MS, true);
 

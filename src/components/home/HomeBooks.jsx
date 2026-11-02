@@ -10,7 +10,6 @@ import { useFetch } from "@/lib/use-fetch";
 export default function HomeBooks() {
   const { data, error, loading, reload } = useFetch("/books");
 
-  // The server returns newest first, so the first 6 are the latest.
   const stats = useMemo(() => {
     const books = data || [];
     return {

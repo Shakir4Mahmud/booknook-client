@@ -1,5 +1,4 @@
-// Uploads one image file to imgbb and returns its public link.
-// Needs NEXT_PUBLIC_IMGBB_KEY in .env.local
+
 export const hasImgbbKey = Boolean(process.env.NEXT_PUBLIC_IMGBB_KEY);
 
 export async function uploadToImgbb(file) {

@@ -3,8 +3,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { apiFetch } from "./api";
 
-// Loads data from the API and gives back loading and error state.
-// setData lets a page update the list after an edit or delete without reloading.
 export function useFetch(path, { auth = false, enabled = true } = {}) {
   const [state, setState] = useState({
     data: null,

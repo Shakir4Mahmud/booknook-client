@@ -113,7 +113,7 @@ export default function MobileMenu({
             </SheetDescription>
           </SheetHeader>
 
-          {/* User card or welcome card */}
+          {/* welcome card */}
           <motion.div
             initial={{ opacity: 0, y: 16, scale: 0.96 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}

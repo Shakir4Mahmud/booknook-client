@@ -4,7 +4,6 @@ import { jwt } from "better-auth/plugins";
 import { nextCookies } from "better-auth/next-js";
 import { MongoClient } from "mongodb";
 
-// Keep one client, so hot reload does not open many connections.
 const globalForMongo = globalThis;
 if (!globalForMongo.mongoClient) {
   globalForMongo.mongoClient = new MongoClient(process.env.MONGODB_URI);
@@ -29,7 +28,7 @@ export const auth = betterAuth({
   plugins: [
     jwt({
       jwt: {
-        // The Express server reads these two fields from the token.
+
         definePayload: ({ user }) => ({
           email: user.email,
           name: user.name,

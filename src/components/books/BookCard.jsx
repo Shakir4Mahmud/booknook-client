@@ -21,18 +21,17 @@ export default function BookCard({ book }) {
       hover
       className="relative flex h-full flex-col overflow-hidden p-0"
     >
-      {/* Colored spine on the left edge */}
+      {/* Colored spine on the left */}
       <span
         aria-hidden="true"
         className="absolute inset-y-0 left-0 z-10 w-1 sm:w-1.5"
         style={{ background: color }}
       />
 
-      {/* Cover area: 3:4 on phones, 4:3 on tablet and desktop */}
       <div className="relative aspect-[3/4] w-full overflow-hidden sm:aspect-[4/3]">
         {showImage ? (
           <>
-            {/* Blurred copy fills the empty sides */}
+
             <Image
               src={book.image}
               alt=""
@@ -42,7 +41,7 @@ export default function BookCard({ book }) {
               sizes="(min-width: 1024px) 33vw, 50vw"
               className="scale-125 object-cover opacity-60 blur-2xl"
             />
-            {/* Real cover, fully visible */}
+
             <Image
               src={book.image}
               alt={`Cover of ${book.title}`}

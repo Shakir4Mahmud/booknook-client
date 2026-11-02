@@ -17,7 +17,6 @@ export default function BorrowPanel({ book }) {
   const pathname = usePathname();
   const user = useTempUser();
 
-  // The user's own borrows, to know if this book is already borrowed.
   const borrows = useFetch("/borrows", { auth: true, enabled: Boolean(user) });
 
   const [available, setAvailable] = useState(book.availableCopies);
@@ -44,7 +43,7 @@ export default function BorrowPanel({ book }) {
       : "bg-emerald-500";
 
   const handleOpen = () => {
-    // Not logged in: send to login, and come back to this book after login.
+    // Not logged in
     if (!user) {
       toast.error("Please login to borrow a book.");
       router.push(`/login?redirect=${encodeURIComponent(pathname)}`);

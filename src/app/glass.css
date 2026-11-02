@@ -1,6 +1,4 @@
-/* Premium glass system.
-   Selectors are prefixed with html so they always beat globals.css,
-   no matter which order the browser loads the css files. */
+
 
 html:root {
   --page-bg:
@@ -70,7 +68,7 @@ html body {
       inset 0 0 24px var(--glass-glow);
   }
 
-  /* Navbar floats over content, so it gets a stronger frosted tint. */
+  /* Navbar floats  */
   html header > nav.glass {
     background: var(--nav-bg);
     -webkit-backdrop-filter: blur(36px) saturate(190%);

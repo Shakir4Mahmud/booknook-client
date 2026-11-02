@@ -15,8 +15,7 @@ export default function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  // Private routes send people here with ?redirect=/add-book.
-  // Only paths on this site are allowed, so nobody can be sent to another website.
+  
   const rawRedirect = searchParams.get("redirect");
   const redirectTo =
     rawRedirect && rawRedirect.startsWith("/") && !rawRedirect.startsWith("//")

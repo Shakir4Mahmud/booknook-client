@@ -64,7 +64,6 @@ export default function EditBookDialog({ book, open, onOpenChange, onSave }) {
         }
       }
 
-      // The server checks that this book belongs to the logged in user.
       const updated = await apiFetch(`/books/${book._id}`, {
         method: "PATCH",
         auth: true,

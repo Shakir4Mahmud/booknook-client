@@ -15,8 +15,7 @@ export default function AllBooksView() {
   const searchParams = useSearchParams();
   const { data, error, loading, reload } = useFetch("/books");
 
-  // Category lives in the URL so links like /books?category=Science work
-  // and the filter survives a page reload.
+  
   const urlCategory = searchParams.get("category");
   const category = categoryList.includes(urlCategory) ? urlCategory : "All";
 

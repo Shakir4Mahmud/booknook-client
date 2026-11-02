@@ -3,10 +3,7 @@
 import { useMemo } from "react";
 import { useSession } from "@/lib/auth-client";
 
-// Real login state from Better Auth.
-// The file name is old. Components still import useTempUser, so nothing else breaks.
 
-// pending is true while the session is still being read after a page load.
 export function useAuth() {
   const { data, isPending } = useSession();
   const sessionUser = data?.user;

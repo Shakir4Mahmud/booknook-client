@@ -58,7 +58,7 @@ function RowActions({ book, onEdit, onDelete }) {
   );
 }
 
-// Rendered only after login, so the user is always set here.
+
 export default function MyBooksView() {
   const user = useTempUser();
   const { data, error, loading, reload, setData } = useFetch("/books", {

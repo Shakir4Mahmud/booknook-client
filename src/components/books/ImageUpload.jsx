@@ -52,7 +52,7 @@ export default function ImageUpload({ file, onChange, error, onError }) {
 
       {showPreview ? (
         <div className="glass relative mx-auto aspect-[3/4] w-full max-w-[220px] overflow-hidden rounded-2xl">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
+
           <img
             src={preview}
             alt="Selected cover preview"

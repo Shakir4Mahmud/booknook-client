@@ -1,4 +1,3 @@
-// One place for category colors. Used by book cards, badges and filters.
 export const categoryColors = {
   Fiction: "#e0607e",
   Science: "#1fb5b0",

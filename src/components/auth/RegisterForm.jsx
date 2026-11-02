@@ -62,7 +62,6 @@ export default function RegisterForm() {
       return;
     }
 
-    // Better Auth signs the user in right after sign up, so go straight to Home.
     toast.success(`Welcome to BookNook, ${name.trim()}!`);
     router.push("/");
     router.refresh();
