@@ -137,7 +137,10 @@ export default function Footer() {
         </div>
 
         <div className="mt-10 border-t border-border pt-6 text-center text-sm text-muted-foreground">
-          &copy; 2026 BookNook. All rights reserved.
+          &copy; 2026 BookNook. All rights reserved.{" "}
+          <Link href="/privacy" className="ml-2 underline hover:text-primary">
+            Privacy Policy
+          </Link>
         </div>
       </div>
     </footer>
